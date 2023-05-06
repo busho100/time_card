@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <div class="container mt-4">
+    <h2 class="text-center mb-4">Attendance System</h2>
+    <form method="post" id="attendance-form" action="{% url 'time_card:attendance' %}">
+      {% csrf_token %}
+      <div class="form-group row">
+        <label for="attendance-time" class="col-sm-2 col-form-label">出勤時間</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="attendance-time" name="attendance_time" {% if attendance.attendance_time %}value="{{ attendance.attendance_time|date:'Y/m/d H:i:s' }}" readonly{% endif %}>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="leave-time" class="col-sm-2 col-form-label">退勤時間</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="leave-time" name="leave_time" {% if attendance.leave_time %}value="{{ attendance.leave_time|date:'Y/m/d H:i:s' }}" readonly{% endif %}>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-sm-10 offset-sm-2">
+          <button type="button" class="btn btn-primary mr-2" id="attendance-button">出勤打刻</button>
+          <button type="button" class="btn btn-secondary" id="leave-button">退勤打刻</button>
+          <button type="submit" class="btn btn-primary">打刻する</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    var attendanceTime = document.getElementById("attendance-time");
+    var leaveTime = document.getElementById("leave-time");
+    var attendanceButton = document.getElementById("attendance-button");
+    var leaveButton = document.getElementById("leave-button");
+
+    attendanceButton.addEventListener("click", function() {
+      var now = new Date();
+      attendanceTime.value = now.toLocaleString();
+    });
+
+    leaveButton.addEventListener("click", function() {
+      var now = new Date();
+      leaveTime.value = now.toLocaleString();
+    });
+
+    // If both attendance and leave times are recorded, hide attendance time field
+    if (attendanceTime.value && leaveTime.value) {
+      attendanceTime.parentElement.parentElement.style.display = "none";
+    }
+  </script>
+  
+{% endblock %}
+
+

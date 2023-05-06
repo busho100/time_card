@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="mb-4">出勤・退勤</h1>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }}">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div class="card mb-4">
+  <div class="card-header">打刻</div>
+  <div class="card-body">
+    <form method="post" id="attendance-form" action="{% url 'time_card:attendance' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="id_check_in">出勤時間</label>
+        <input type="datetime-local" class="form-control" id="id_check_in" name="check_in">
+        <button type="submit" class="btn btn-primary" id="check-in-button">出勤打刻</button>
+      </div>
+      <div class="form-group">
+        <label for="id_check_out">退勤時間</label>
+        <input type="datetime-local" class="form-control" id="id_check_out" name="check_out" {% if form.check_out.value %}value="{{ form.check_out.value }}"{% endif %}>
+        <button type="button" class="btn btn-primary" id="check-out-button">退勤打刻</button>
+      </div>
+      <button type="submit" class="btn btn-primary my-4">打刻する</button>
+    </form>
+  </div>
+</div>
+{% if attendances %}
+
+<div class="card mb-4">
+  <div class="card-header">出勤・退勤履歴</div>
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>出勤時間</th>
+          <th>退勤時間</th>
+          <th>勤務時間</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for attendance in attendances %}
+          <tr>
+            <td>{{ attendance.attendance_date }}</td>
+            <td>{{ attendance.check_in|date:"H:i:s" }}</td>
+            <td>{% if attendance.check_out %}{{ attendance.check_out|date:"H:i:s" }}{% endif %}</td>
+            <td>{% if attendance.work_time %}{{ attendance.work_time }}{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+<script>
+  var attendanceTime = document.getElementById("attendance-time");
+  var leaveTime = document.getElementById("leave-time");
+  var attendanceButton = document.getElementById("attendance-button");
+  var leaveButton = document.getElementById("leave-button");
+
+  attendanceButton.addEventListener("click", function() {
+    var now = new Date();
+    attendanceTime.value = now.toLocaleString();
+  });
+
+  leaveButton.addEventListener("click", function() {
+    var now = new Date();
+    leaveTime.value = now.toLocaleString();
+  });
+
+  // If both attendance and leave times are recorded, hide attendance time field
+  if (attendanceTime.value && leaveTime.value) {
+    attendanceTime.parentElement.parentElement.style.display = "none";
+  }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+  <script>
+    $(document).ready(function() {
+      $('#check-in-button').click(function() {
+      var now = new Date();
+      var yyyy = now.getFullYear();
+      var mm = ('0' + (now.getMonth() + 1)).slice(-2);
+      var dd = ('0' + now.getDate()).slice(-2);
+      var hh = ('0' + now.getHours()).slice(-2);
+      var mi = ('0' + now.getMinutes()).slice(-2);
+      $('#id_check_in').val(yyyy + '-' + mm + '-' + dd + 'T' + hh + ':' + mi);
+    });
+  });
+  </script>
+
+
+{% endblock %}

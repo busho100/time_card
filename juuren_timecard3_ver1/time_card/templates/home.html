@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h2 class="text-center my-4">Time Card</h2>
+    <div class="row">
+      <div class="col-md-6 mx-auto">
+        <div class="card shadow-sm">
+          <div class="card-header">
+            Attendance
+          </div>
+          <div class="card-body">
+            {% if form.errors %}
+              <div class="alert alert-danger">
+                <strong>Error:</strong> Please check your input.<br>
+                {% for field, errors in form.errors.items %}
+                  {% for error in errors %}
+                    {{ field }}: {{ error }}<br>
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+            <form method="POST">
+              {% csrf_token %}
+              <div class="form-group">
+                {{ form.check_in.label_tag }}
+                {{ form.check_in }}
+              </div>
+              <div class="form-group">
+                {{ form.check_out.label_tag }}
+                {{ form.check_out }}
+              </div>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

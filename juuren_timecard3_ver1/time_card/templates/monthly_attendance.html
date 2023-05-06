@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 class="my-4">勤怠集計</h1>
+  <h2 class="my-4">{{ form.title }}</h2>
+  
+  {% if attendances %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>出勤時間</th>
+          <th>退勤時間</th>
+          <th>勤務時間</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for attendance in attendances %}
+          <tr>
+            <td>{{ attendance.attendance_date|date:'Y/m/d' }}</td>
+            <td>{{ attendance.check_in|date:'H:i' }}</td>
+            <td>{{ attendance.check_out|date:'H:i' }}</td>
+            <td>{{ attendance.work_time|default_if_none:'' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="3">合計勤務時間</th>
+          <td>{{ total_work_time|default_if_none:'' }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ form.group|as_crispy_field }}
+    </div>
+    <div class="form-group">
+      {{ form.year|as_crispy_field }}
+      {{ form.month|as_crispy_field }}
+    </div>
+    <button type="submit" class="btn btn-primary">集計する</button>
+  </form>
+
+{% endblock %}
